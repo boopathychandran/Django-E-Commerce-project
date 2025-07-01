@@ -1,0 +1,220 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chandran Electronics Wishlist</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(120deg, #e0f2fe 0%, #bbf7d0 50%, #34d399 100%);
+            background-size: 200% 200%;
+            animation: gradientBG 12s ease-in-out infinite;
+            min-height: 100vh;
+        }
+        @keyframes gradientBG {
+            0% {background-position: 0% 50%;}
+            50% {background-position: 100% 50%;}
+            100% {background-position: 0% 50%;}
+        }
+        .navbar {
+            background: rgba(52, 211, 153, 0.95) !important;
+            box-shadow: 0 4px 24px rgba(52, 211, 153, 0.15);
+        }
+        .navbar-brand, .navbar-text {
+            color: #065f46 !important;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        .site-title h1 {
+            color: #065f46;
+            font-weight: 800;
+            margin: 2rem 0 1rem 0;
+            text-align: center;
+            text-shadow: 0 4px 24px rgba(52, 211, 153, 0.15);
+            letter-spacing: 2px;
+            font-size: 2.5rem;
+        }
+        .wishlist-summary-box {
+            background: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 2px 16px rgba(52,211,153,0.10);
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 900px;
+        }
+        .wishlist-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+        }
+        .wishlist-card {
+            background: #f9fafb;
+            border-radius: 1rem;
+            box-shadow: 0 2px 8px rgba(52,211,153,0.10);
+            padding: 1.5rem;
+            width: 270px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .wishlist-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+            border: 2px solid #34d399;
+            margin-bottom: 1rem;
+        }
+        .wishlist-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #047857;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+        .wishlist-price {
+            color: #10b981;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .btn-remove {
+            background: #f87171;
+            color: #fff;
+            border-radius: 1rem;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+            border: none;
+            margin-bottom: 0.5rem;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        .btn-remove:hover {
+            background: #dc2626;
+        }
+        .btn-add {
+            background: linear-gradient(90deg, #34d399 0%, #10b981 100%);
+            color: #fff;
+            border-radius: 1rem;
+            padding: 0.5rem 1.5rem;
+            font-weight: 600;
+            border: none;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        .btn-add:hover {
+            background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+        }
+        .empty-wishlist-msg {
+            text-align: center;
+            color: #64748b;
+            margin-top: 3rem;
+            font-size: 1.25rem;
+        }
+        .btn-back {
+            display: block;
+            margin: 2rem auto 0 auto;
+            background: #fbbf24;
+            color: #fff;
+            border-radius: 1rem;
+            padding: 0.5rem 2rem;
+            font-weight: 600;
+            border: none;
+            text-align: center;
+            width: fit-content;
+            transition: background 0.2s;
+            text-decoration: none;
+        }
+        .btn-back:hover {
+            background: #f59e42;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'ecommerce' %}">Chandran Electronics</a>
+            <span class="navbar-text">Wishlist</span>
+            <div class="ms-auto">
+                <a href="{% url 'cart' %}" class="btn btn-outline-success me-2">Cart</a>
+                <a href="{% url 'profile' %}" class="btn btn-outline-primary">Profile</a>
+            </div>
+        </div>
+    </nav>
+    <div class="site-title">
+        <h1>Your Wishlist</h1>
+    </div>
+    <div class="wishlist-summary-box">
+        {% if wishlist_items %}
+            <div class="wishlist-row">
+                {% for item in wishlist_items %}
+                    <div class="wishlist-card" id="wishlist-item-{{ item.id }}">
+                        <a href="{% url 'product_detail' item.product.id %}">
+                            {% if item.product.image %}
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="wishlist-image">
+                            {% else %}
+                                <img src="{% static 'images/default.jpg' %}" alt="No Image" class="wishlist-image">
+                            {% endif %}
+                        </a>
+                        <div class="wishlist-title">
+                            <a href="{% url 'product_detail' item.product.id %}" style="color:inherit;text-decoration:none;">{{ item.product.name }}</a>
+                        </div>
+                        <div class="wishlist-price">Price: ₹{{ item.product.price }}</div>
+                        <form method="POST" action="{% url 'remove_from_wishlist' item.id %}" style="width:100%;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-remove">Remove</button>
+                        </form>
+                        <button type="button" class="btn btn-add" onclick="moveToCart({{ item.product.id }}, {{ item.id }})">Move to Cart</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="empty-wishlist-msg">Your wishlist is empty.</p>
+        {% endif %}
+    </div>
+    <a href="{% url 'ecommerce' %}" class="btn-back">Back to Shop</a>
+    <script>
+function getCSRFToken() {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, 10) === ('csrftoken=')) {
+                cookieValue = decodeURIComponent(cookie.substring(10));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function moveToCart(productId, wishlistItemId) {
+    fetch(`/ajax/move_to_cart/${productId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCSRFToken(),
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (document.querySelector('.cart-count')) {
+                document.querySelector('.cart-count').textContent = data.cart_count;
+            }
+            if (document.querySelector('.wishlist-count')) {
+                document.querySelector('.wishlist-count').textContent = data.wishlist_count;
+            }
+            const itemDiv = document.getElementById('wishlist-item-' + wishlistItemId);
+            if (itemDiv) itemDiv.remove();
+        } else {
+            alert(data.error || 'Error moving to cart');
+        }
+    });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Cart - Chandran Electronics</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            /* EXACTLY match main page gradient and animation */
+            background: linear-gradient(120deg, #e0f2fe 0%, #bbf7d0 50%, #34d399 100%);
+            background-size: 200% 200%;
+            animation: gradientBG 12s ease-in-out infinite;
+            min-height: 100vh;
+        }
+        @keyframes gradientBG {
+            0% {background-position: 0% 50%;}
+            50% {background-position: 100% 50%;}
+            100% {background-position: 0% 50%;}
+        }
+        .navbar {
+            background: rgba(52, 211, 153, 0.95) !important;
+            box-shadow: 0 4px 24px rgba(52, 211, 153, 0.15);
+        }
+        .navbar-brand, .navbar-text {
+            color: #065f46 !important;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        .site-title h1 {
+            background-color: black;
+            color: #ffffff;
+            font-weight: 800;
+            margin: 2rem 0 1rem 0;
+            text-align: center;
+            text-shadow: 0 4px 24px rgba(52, 211, 153, 0.15);
+            letter-spacing: 2px;
+            font-size: 2.5rem;
+        }
+        .section-title {
+            color: #047857;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .cart-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+            border: 2px solid #34d399;
+        }
+        .cart-summary-box {
+            background: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 2px 16px rgba(52,211,153,0.10);
+            padding: 2rem;
+            margin-top: 2rem;
+            text-align: center;
+        }
+        .btn-checkout {
+            background: linear-gradient(90deg, #34d399 0%, #10b981 100%);
+            color: #fff;
+            border-radius: 2rem;
+            padding: 0.75rem 2rem;
+            font-weight: 700;
+            transition: background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(52,211,153,0.15);
+            border: none;
+        }
+        .btn-checkout:hover {
+            background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+            box-shadow: 0 4px 16px rgba(52,211,153,0.25);
+        }
+        .btn-remove {
+            background: #f87171;
+            color: #fff;
+            border-radius: 1rem;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+            border: none;
+            transition: background 0.2s;
+        }
+        .btn-remove:hover {
+            background: #dc2626;
+        }
+        .empty-cart-msg {
+            text-align: center;
+            color: #64748b;
+            margin-top: 3rem;
+            font-size: 1.25rem;
+        }
+        .progress {
+            background: rgba(255,255,255,0.2);
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+        .progress-bar {
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'ecommerce' %}">← Back to Shopping</a>
+            <span class="navbar-text">Your Cart</span>
+        </div>
+    </nav>
+
+    <div class="site-title">
+        <h1>Chandran Electronics</h1>
+    </div>
+
+    <h2 class="section-title">Your Cart</h2> 
+
+    <!-- Show Django messages here -->
+    {% if messages %}
+      <div class="container mb-3">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} text-center">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Progress Bar -->
+    <div class="container mb-4">
+        <div class="progress" style="height: 1.5rem;">
+            <div class="progress-bar bg-success" role="progressbar" style="width: 33%;" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100">
+                <span class="fw-bold">Cart</span>
+            </div>
+            <div class="progress-bar bg-info" role="progressbar" style="width: 33%;" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100">
+                <span class="fw-bold">Address</span>
+            </div>
+            <div class="progress-bar bg-light text-dark" role="progressbar" style="width: 34%;" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100">
+                <span class="fw-bold">Payment</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        {% if cart %}
+            <div class="row g-4">
+                {% for item in cart %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body d-flex flex-column align-items-center">
+                            {% if item.image %}
+                                <img src="{{ item.image }}" alt="{{ item.name }}" class="cart-image mb-3">
+                            {% else %}
+                                <img src="{% static 'images/default.jpg' %}" alt="No Image" class="cart-image mb-3">
+                            {% endif %}
+                            <h5 class="card-title">{{ item.name }}</h5>
+                            <p class="card-text text-success fw-bold">Price: ₹{{ item.price }}</p>
+                            <p class="card-text">Quantity: {{ item.quantity }}</p>
+                            <p class="card-text">Total: ₹{{ item.total }}</p>
+                            <form method="POST" action="{% url 'remove_from_cart' item.id %}" class="w-100 mt-2">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-remove w-100">Remove</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="cart-summary-box mt-5">
+                <!-- Coupon Code Box -->
+                <form class="row g-2 mb-4 justify-content-center" method="post" action="{% url 'apply_coupon' %}">
+                    {% csrf_token %}
+                    <div class="col-auto">
+                        <input type="text" name="coupon" class="form-control" placeholder="Enter coupon code" style="border-radius: 2rem;">
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-outline-success" style="border-radius: 2rem;">Apply</button>
+                    </div>
+                </form>
+                {% if coupon %}
+                    <div class="d-flex justify-content-center align-items-center mb-2 text-success">
+                        <span>Coupon <strong>{{ coupon }}</strong> applied! (-₹{{ discount_amount }})</span>
+                        <form method="post" action="{% url 'remove_coupon' %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger ms-2" style="border-radius: 1rem;">Remove</button>
+                        </form>
+                        
+                    </div>
+                    <div class="mb-2 text-muted" style="text-decoration: line-through;">
+                        Original Total: ₹{{ original_total }}
+                    </div>
+                {% endif %}
+                <h3 class="mb-4">Cart Total: ₹{{ total }}</h3>
+                <a href="{% url 'address' %}" class="btn btn-checkout btn-lg">Proceed to Checkout</a>
+            </div>
+        {% else %}
+            <p class="empty-cart-msg">Your cart is empty.</p>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

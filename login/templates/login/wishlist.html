@@ -166,7 +166,7 @@
                             {% csrf_token %}
                             <button type="submit" class="btn btn-remove">Remove</button>
                         </form>
-                        <button type="button" class="btn btn-add" onclick="moveToCart({{ item.product.id }}, {{ item.id }})">Move to Cart</button>
+                        <button type="button" class="btn btn-add" onclick="moveToCart('{{ item.product.id }}', '{{ item.id }}')">Move to Cart</button>
                     </div>
                 {% endfor %}
             </div>

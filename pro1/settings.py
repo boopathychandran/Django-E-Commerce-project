@@ -16,7 +16,6 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -26,8 +25,7 @@ SECRET_KEY = 'django-insecure-2bxf-6nm#d^-6nkvwm)rttvu@vhso&6=)k48mr9y*jocw*c33@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['boopathychandran.pythonanywhere.com']
 
 # Application definition
 
@@ -73,7 +71,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'pro1.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
@@ -83,7 +80,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -103,7 +99,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -115,33 +110,27 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "static"]
+STATICFILES_DIRS = [BASE_DIR / "static"] 
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField' 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Media files (Uploaded files)
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
+MEDIA_ROOT = BASE_DIR / 'media'
 
-# Login redirect URL
-LOGIN_REDIRECT_URL = '/ecommerce/'  
-# Logout redirect URL
+# Login/Logout redirect URLs
+LOGIN_REDIRECT_URL = '/ecommerce/'
 LOGOUT_REDIRECT_URL = '/login/'
-LOGIN_URL = '/login/' 
-# Razorpay settings
-RAZORPAY_KEY_ID = "rzp_test_yAhT9uAyVRizKF"
-RAZORPAY_KEY_SECRET = "uY8PUvE7SRbbFoDFzkpiZlDW" 
+LOGIN_URL = '/login/'
 
-# settings.py
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'  # Assuming BASE_DIR is defined
-
+# Razorpay settings (move to environment variables for production!)
+RAZORPAY_KEY_ID = "rzp_test_yAhT9uAyVRizKFB"
+RAZORPAY_KEY_SECRET = "uY8PUvE7SRbbFoDFzkpiZlDWB"

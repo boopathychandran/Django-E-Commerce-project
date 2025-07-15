@@ -1,0 +1,38 @@
+name: Deploy to PythonAnywhere
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Deploy to PythonAnywhere
+        env:
+          PA_USERNAME: chandran
+          PA_HOST: chandran.pythonanywhere.com
+          PA_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: |
+          # Install HTTPie for API calls
+          pip install httpie
+
+          # Reload the web app using PythonAnywhere API
+          http --ignore-stdin \
+            --auth $PA_USERNAME:${PA_API_TOKEN} \
+            POST https://www.pythonanywhere.com/api/v0/user/$PA_USERNAME/webapps/$PA_HOST/reload/
